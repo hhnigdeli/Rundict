@@ -22,3 +22,26 @@ class gpsdata(object):
             coor.append(title.get_text())
         
         return coor
+    
+    def to_df(data, seperator=","):
+        """
+        to  convert file that has been read before to Pandas DataFareme
+        
+        to_df(data) 
+
+        example,
+
+        from rundict import gpsdata
+        a = gpsdata.read(file_name= file.kml)
+        DataFrame = gpsdata.to_df(data=a)
+
+        """
+        df_s =[]
+        for i in range(len(data)):
+            a = shlex.split(data[i], posix=False)
+            df_s.append(a)
+        df = pd.DataFrame(df_s).transpose()
+        df.columns =["data"]
+        df[['Lat', 'Long', 'Alt']] = df.data.str.split(seperator,expand=True)
+        df = df[['Lat', 'Long', 'Alt']].astype({"Lat": float , "Long": float,"Alt":float})
+        return df
