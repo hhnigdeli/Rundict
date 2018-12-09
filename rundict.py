@@ -3,7 +3,7 @@ import shlex
 from bs4 import BeautifulSoup
 from math import sin, cos, sqrt, atan2, radians
 
-class gpsdata(object):
+class route(object):
 
     def read(file_name,tag="coordinates"):
         """
