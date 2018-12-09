@@ -8,7 +8,7 @@ class route(object):
     def read(file_name,tag="coordinates"):
         """
         to read .kml file
-        read_kml(file,tag="coordinates")
+        read_kml(file_name="file.kml",tag="coordinates")
 
         file_name ==> .xml or .kml file in the directory
         tag ==> The tag name that includes Lat, Long and Altitute data most probably it is "coordinates"
