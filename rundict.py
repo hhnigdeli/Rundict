@@ -1,11 +1,12 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 import shlex
 from bs4 import BeautifulSoup
 from math import sin, cos, sqrt, atan2, radians
 
 class route(object):
 
-    def read(file_name,tag="coordinates"):
+    def read(file_name,tag="LineString"):
         """
         to read .kml file
         read_kml(file_name="file.kml",tag="coordinates")
@@ -24,7 +25,7 @@ class route(object):
         
         return coor
     
-    def to_df(data, seperator=","):
+    def to_df( data, seperator=","):
         """
         to  convert file that has been read before to Pandas DataFareme
         
@@ -33,21 +34,48 @@ class route(object):
         example,
 
         from rundict import gpsdata
-        a = gpsdata.read(file_name= file.kml)
+        a = gpsdata.read(file_name= "file.kml")
         DataFrame = gpsdata.to_df(data=a)
 
         """
-        df_s =[]
+
+        #to split merged text values by " "
+        liste_0 =[]
         for i in range(len(data)):
             a = shlex.split(data[i], posix=False)
-            df_s.append(a)
-        df = pd.DataFrame(df_s).transpose()
-        df.columns =["data"]
-        df[['Lat', 'Long', 'Alt']] = df.data.str.split(seperator,expand=True)
-        df = df[['Lat', 'Long', 'Alt']].astype({"Lat": float , "Long": float,"Alt":float})
-        return df
-    
-    def add_distance(data, radius=6371):
+            liste_0.append(a)
+        
+        df_0 = pd.DataFrame(liste_0).transpose()
+        
+        #to merge different columns that represent continious gpsdata to one column
+        liste_1 = []
+        for i in range(len(df_0.columns)):
+            liste_1.append(df_0[i])
+
+        d = pd.concat(liste_1, ignore_index=True)
+        df_1=pd.DataFrame(d)
+
+        #to split one column values three columns represent Lat Long and Alt 
+        df_1.columns = ["column"]
+        df_1[['Lat', 'Long', 'Alt']] = df_1.column.str.split(seperator,expand=True)
+        df_2 = df_1[['Lat', 'Long', 'Alt']].astype({"Lat": float , "Long": float,"Alt":float})
+
+        counter = 0
+
+        if df_2.Alt.sum() < 15:
+       
+        
+            df_3 = df_2.dropna()
+            df_4 = df_3.reset_index(drop=True)
+        else:
+            df_3 = df_2.dropna()
+            
+            df_4 = df_3[~(df_2 == 0).any(axis=1)]
+            df_4 = df_4.reset_index(drop=True)
+        return df_4
+
+
+    def add_distance(data,radius=6371):
 
         """
         to add distances between two points induvisually and acumulated
@@ -74,6 +102,7 @@ class route(object):
 
         """
         
+        #to colculate distances between to gps points and aculated distances 
         distances = []
         for i in range(len(data)):
             if i == 0:
@@ -86,7 +115,7 @@ class route(object):
 
                 dlon = lon1 - lon2
                 dlat = lat1 - lat2
-
+        #to calculate distace between two points on the earth
                 a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
                 c = 2 * atan2(sqrt(a), sqrt(1 - a))
 
@@ -99,3 +128,12 @@ class route(object):
         c_distances.columns = ["Cdist"]
         dframe=pd.concat([data, distances,c_distances], axis=1)
         return dframe
+
+    def to_graph(data):
+        
+        plt.xlabel('Distance meters')
+        plt.ylabel('Altitue meters')
+        plt.title('Route Topo')
+        plt.plot(data.Cdist, data.Alt, "r-" )
+        return plt.show()
+    
