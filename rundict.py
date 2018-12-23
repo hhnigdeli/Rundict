@@ -109,3 +109,65 @@ class route(object):
         plt.title('Route Topo')
         plt.plot(data.Cdist, data.Alt, "r-" )
         return plt.show() 
+    
+    def find_peaks(data,scan=500):
+
+        """
+        find_peaks(data,scan=500)
+
+        data = Dataframe that created before from .kml file wit distances
+        scan = sacaning range in metres to find peaks in the topo 
+
+        returns peak indicated graph
+        
+        """
+
+        l_0 = []
+        c = data.Cdist[len(data)-1] / len(data)
+        scan = 500
+        x = int(scan/c)
+        for i in range(0,len(data),x):
+            l_0.append(i)
+        
+        b=[]
+        for i in range(len(l_0)):
+            if i == 0:
+                pass
+            else:
+                b.append( max(data.Alt[l_0[i-1]:l_0[i]]))
+        
+        l_1 =[]
+        for i in range(len(b)):
+            if i == 0 :
+                if  b[i]>b[i+1]:
+                    l_1.append(b[i])
+            elif i == len(b)-1:
+                if b[i]> b[i-1]:
+                    l_1.append(b[i])
+            elif b[i-1]<b[i]> b[i+1]:
+                l_1.append(b[i])
+
+        l_2=[]
+        for i in range(len(l_1)):
+            if i == 0 :
+                if  l_1[i]>l_1[i+1]:
+                    l_2.append(l_1[i])
+            elif i == len(l_1)-1:
+                if l_1[i]> l_1[i-1]:
+                    l_2.append(l_1[i])
+            elif l_1[i-1]<l_1[i]> l_1[i+1]:
+                l_2.append(l_1[i])
+
+        peak=[]
+
+        for i in range(len(l_2)):
+
+            peak.append(data.index[data['Alt'] == l_2[i]].tolist())
+
+        plt.rcParams['figure.figsize']=(10,3)
+        plt.plot(data.Alt)
+        for i in range(len(peak)):
+            plt.vlines(peak[i][0],min(data.Alt),max(data.Alt),colors="g")
+            plt.vlines(peak[i][-1],min(data.Alt),max(data.Alt),colors="r")
+        
+        return plt.show()
