@@ -71,8 +71,10 @@ add_distance(data,radius=6371):
 <h2>Function4, gpsdata.find_peaks()</h2>
 
 find_peaks(data,scan=500):
+
+
         """
-        find_peaks(data,scan=500)
+        
 
         data = Dataframe that created before from .kml file wit distances
         scan = sacaning range in metres to find peaks in the topo 
