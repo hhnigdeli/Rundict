@@ -6,9 +6,9 @@ For reading .xml and .kml GPS running route data files and create topo and split
 
 first,
 
-from rundict import gpsdata
+from rundict import route
 
-<h2>Function1, gpsdata.read()</h2>
+<h2>Function1, route.read()</h2>
 
 read(file_name,tag="LineString"):
 
@@ -22,7 +22,7 @@ read(file_name,tag="LineString"):
 
         """
 
-<h2>Function2, gpsdata.to_df()</h2>
+<h2>Function2, route.to_df()</h2>
 
 to_df( data, seperator=","):
 
@@ -33,13 +33,13 @@ to_df( data, seperator=","):
 
         example,
 
-        from rundict import gpsdata
-        a = gpsdata.read(file_name= "file.kml")
+        from rundict import route
+        a = route.read(file_name= "file.kml")
         DataFrame = gpsdata.to_df(data=a)
 
         """
        
-<h2>Function3, gpsdata.add_distance()</h2>
+<h2>Function3, route.add_distance()</h2>
 
 add_distance(data,radius=6371):
 
@@ -54,10 +54,10 @@ add_distance(data,radius=6371):
 
         example,
 
-        from rundict import gpsdata
-        a = gpsdata.read(file_name= "file.kml")
-        DataFrame = gpsdata.to_df(data=a)
-        data_with_dists = gpsdata.add_distance(data=DataFrame, radius=6371 )
+        from rundict import route
+        a = route.read(file_name= "file.kml")
+        DataFrame = route.to_df(data=a)
+        data_with_dists = route.add_distance(data=DataFrame, radius=6371 )
 
         returns,
 
@@ -68,7 +68,7 @@ add_distance(data,radius=6371):
 
         """
         
-<h2>Function4, gpsdata.find_peaks()</h2>
+<h2>Function4, route.find_peaks()</h2>
 
 find_peaks(data,scan=500):
 
