@@ -116,7 +116,7 @@ class route(object):
         find_peaks(data,scan=500)
 
         data = Dataframe that created before from .kml file wit distances
-        scan = sacaning range in metres to find peaks in the topo 
+        scan = scaning range in metres to find peaks in the topo 
 
         returns peak indicated graph
         
