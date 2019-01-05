@@ -135,7 +135,6 @@ class route(object):
                 pass
             else:
                 b.append( max(data.Alt[l_0[i-1]:l_0[i]]))
-        
         l_1 =[]
         for i in range(len(b)):
             if i == 0 :
@@ -146,7 +145,6 @@ class route(object):
                     l_1.append(b[i])
             elif b[i-1]<b[i]> b[i+1]:
                 l_1.append(b[i])
-
         l_2=[]
         for i in range(len(l_1)):
             if i == 0 :
@@ -157,17 +155,14 @@ class route(object):
                     l_2.append(l_1[i])
             elif l_1[i-1]<l_1[i]> l_1[i+1]:
                 l_2.append(l_1[i])
-
         peak=[]
-
         for i in range(len(l_2)):
-
             peak.append(data.index[data['Alt'] == l_2[i]].tolist())
-
-        plt.rcParams['figure.figsize']=(10,3)
-        plt.plot(data.Alt)
+        plt.rcParams['figure.figsize']=(7,5)
+        plt.plot(data.Cdist,data.Alt)
         for i in range(len(peak)):
-            plt.vlines(peak[i][0],min(data.Alt),max(data.Alt),colors="g")
             plt.vlines(peak[i][-1],min(data.Alt),max(data.Alt),colors="r")
-        
+        plt.xlabel('Data Points')
+        plt.ylabel('Altitue meters')
+        plt.title('Route Topo')
         return plt.show()
