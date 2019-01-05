@@ -1,6 +1,6 @@
 <h1>Rundict</h1>
 
-For reading .xml and .kml files and convert them to Pandas Dataframe
+For reading .xml and .kml GPS data files and create topography and split the topo by peak points.
 
 
 
