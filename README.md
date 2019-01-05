@@ -1,6 +1,6 @@
 <h1>Rundict</h1>
 
-For reading .xml and .kml GPS data files and create topography and split the topo by peak points.
+For reading .xml and .kml GPS running route data files and create topography and split the topo by peak points.
 
 
 
