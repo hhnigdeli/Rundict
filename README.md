@@ -70,7 +70,7 @@ add_distance(data,radius=6371):
         
 <h2>Function4, route.find_peaks()</h2>
 
-find_peaks(data,scan=500):
+find_peaks(data,scan=1500):
 
 
         """
