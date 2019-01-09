@@ -110,61 +110,49 @@ class route(object):
         plt.plot(data.Cdist, data.Alt, "r-" )
         return plt.show() 
     
-    def find_peaks(data,scan=1500):
+class splinter(object):
 
-        """
-        find_peaks(data,scan=1500)
+    def find_peaks( data ,x_axis,  y_axis ,scan=1500, h=7,w=5 ):
 
-        data = Dataframe that created before from .kml file wit distances
-        scan = scaning range in metres to find peaks in the topo 
-
-        returns peak indicated graph
-        
-        """
-        #creating list l_0 which include index range to scan 
-        l_0 = []
-        c = data.Cdist[len(data)-1] / len(data)
-        
-        x = int(scan/c)
-        for i in range(0,len(data),x):
-            l_0.append(i)
+            l_0 = []
+            c = x_axis[len(data)-1] / len(data)
             
-        #creating list b which include max Alt values between l_2 index ranges
-        b=[]
-        for i in range(len(l_0)):
-            if i == 0:
-                pass
-            else:
-                b.append( max(data.Alt[l_0[i-1]:l_0[i]]))
-                
-        #creating list l_1 which include choosen real max values picking with compare behind and in front of values of i
-        l_1 =[]
-        for i in range(len(b)):
-            if i == 0 :
-                if  b[i]>b[i+1]:
-                    l_1.append(b[i])
-                else:
+            x = int(scan/c)
+            for i in range(0,len(data),x):
+                l_0.append(i)
+            
+            b=[]
+            for i in range(len(l_0)):
+                if i == 0:
                     pass
-            elif i == len(b)-1:
-                if b[i]> b[i-1]:
-                    l_1.append(b[i])
                 else:
-                    pass
-            elif b[i-1]<b[i]> b[i+1]:
-                l_1.append(b[i])
-        #creating list peak which include eliminated values of index
-        peak=[]
-        for i in range(len(l_1)):
-            if i < len(l_1)/2:
-                peak.append(list(data.Cdist[data['Alt'] == l_1[i]])[0])
-            elif i>=len(l_1)/2:
-                peak.append(list(data.Cdist[data['Alt'] == l_1[i]])[-1])
-        #visualization
-        plt.rcParams['figure.figsize']=(7,5)
-        plt.plot(data.Cdist,data.Alt)
-        for i in range(len(peak)):
-            plt.vlines(peak[i],ymin=min(data.Alt),ymax=list(data.Alt[data['Alt'] == l_1[i]])[0])
-        plt.xlabel('Distance meters')
-        plt.ylabel('Altitue meters')
-        plt.title('Route Topo')
-        return plt.show()
+                    b.append( max(y_axis[l_0[i-1]:l_0[i]]))
+            l_1 =[]
+            for i in range(len(b)):
+                if i == 0 :
+                    if  b[i]>b[i+1]:
+                        l_1.append(b[i])
+                    else:
+                        pass
+                elif i == len(b)-1:
+                    if b[i]> b[i-1]:
+                        l_1.append(b[i])
+                    else:
+                        pass
+                elif b[i-1]<b[i]> b[i+1]:
+                    l_1.append(b[i])
+            
+            peak=[]
+            for i in range(len(l_1)):
+                if i < len(l_1)/2:
+                    peak.append(list(x_axis[y_axis == l_1[i]])[0])
+                elif i>=len(l_1)/2:
+                    peak.append(list(x_axis[y_axis == l_1[i]])[-1])
+            plt.rcParams['figure.figsize']=(h,w)
+            plt.plot(x_axis,y_axis)
+            for i in range(len(peak)):
+                plt.vlines(peak[i],ymin=min(y_axis),ymax=list(y_axis[y_axis == l_1[i]])[0])
+            plt.xlabel('Distance meters')
+            plt.ylabel('Altitue meters')
+            plt.title('Route Topo')
+            return plt.show()   
