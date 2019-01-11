@@ -12,6 +12,8 @@ from rundict import route,splinter
 
 read(file_name,tag="LineString"):
 
+---------------------------------------------------------------------------------------------
+
 
         """
         to read .kml file
@@ -27,10 +29,11 @@ read(file_name,tag="LineString"):
 
 to_df( data, seperator=","):
 
+---------------------------------------------------------------------------------------------
+
         
 to  convert file that has been read before to Pandas DataFareme
         
-to_df(data) 
 
 example,
 
@@ -47,11 +50,11 @@ example,
 
 add_distance(data,radius=6371):
 
+---------------------------------------------------------------------------------------------
+
         
 to add distances between two points induvidually and accumulated
 
-add_distance(world_radius=6371, data)
-        
 radius: default 6371 kms
 
 data: Pandas DataFrame includes Lat & Long olumns
@@ -73,21 +76,19 @@ returns dataset with distances
 
 <h2>Function4, splinter.find_peaks()</h2>
 
-find_peaks(data,scan=1500):
+find_peaks( data ,x_axis,  y_axis ,scan=1500, h=7,w=5 ):
 
+---------------------------------------------------------------------------------------------
 
         
 to find peak points on the dataset
-find_peaks( data ,x_axis,  y_axis ,scan=1500, h=7,w=5 )
-
-
----------------------------------------------------------------------------------------------
 
 data: Dataset 
+
 x_axis: x axis of line plot or index 
+
 y_axis: data points of y axis 
 
----------------------------------------------------------------------------------------------
 
 example,
 
