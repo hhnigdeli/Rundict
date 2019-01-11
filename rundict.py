@@ -111,9 +111,26 @@ class route(object):
         return plt.show() 
     
 class splinter(object):
-
+  
     def find_peaks( data ,x_axis,  y_axis ,scan=1500, h=7,w=5 ):
-
+            """
+            to find peak points on the dataset
+            find_peaks( data ,x_axis,  y_axis ,scan=1500, h=7,w=5 )
+            ---------------------------------------------------------------------------------------------
+            data   = Dataset 
+            x_axis = x axis of line plot or index 
+            y_axis = data points of y axis 
+            ---------------------------------------------------------------------------------------------
+            example,
+            from rundict import gpsdata,splinter
+            a = gpsdata.read(file_name= "file.kml")
+            DataFrame = gpsdata.to_df(data=a)
+            data = gpsdata.add_distance(data=DataFrame, radius=6371 )
+            splinter.find_peaks(data, data.Cdist , data.Alt , 1500, 7,5)
+            
+            returns splited line plot on graph and list of edges' index
+            
+            """
             l_0 = []
             c = x_axis[len(data)-1] / len(data)
             
