@@ -14,14 +14,13 @@ read(file_name,tag="LineString"):
 
 ---------------------------------------------------------------------------------------------
 
+to read .kml file
+
+example,
 
         """
-        to read .kml file
-        read_kml(file,tag="coordinates")
-
-        file_name = .xml or .kml file in the directory
-        tag = The tag name that includes Lat, Long and Altitute data most probably it is "coordinates"
-
+        file_name: .xml or .kml file in the directory
+        tag: The tag name that includes Lat, Long and Altitute data most probably it is "coordinates
         """
         
 
@@ -42,7 +41,6 @@ example,
         from rundict import route
         a = route.read(file_name= "file.kml")
         DataFrame = gpsdata.to_df(data=a)
-
         """
         
               
@@ -98,8 +96,7 @@ example,
             a = gpsdata.read(file_name= "file.kml")
             DataFrame = gpsdata.to_df(data=a)
             data = gpsdata.add_distance(data=DataFrame, radius=6371 )
-            splinter.find_peaks(data, data.Cdist , data.Alt , 1500, 7,5)
-            
+            splinter.find_peaks(data, data.Cdist , data.Alt , 1500, 7,5)            
             """
             
            
