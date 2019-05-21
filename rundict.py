@@ -102,7 +102,68 @@ class route(object):
         c_distances.columns = ["Cdist"]
         dframe=pd.concat([data, distances,c_distances], axis=1)
         return dframe
+    
+    def add_Asc(data,AscUpLim,AscLowLim):
 
+        """
+        to add Ascent variable to DataFrame 
+        AscUpLim = Clear outliars up limit and replace lineer data to it
+        AscLowLim = Clear outliars low  limit and replace lineer data to it
+        data = pandas Dataframe must include columns,
+
+                 Lat       Long        Alt       Dist         Cdist
+        0      32.003820  36.538675  -7.100000   0.000000      0.000000
+        1      32.003716  36.538640  10.000000  12.029010     12.029010
+        2      32.003591  36.538621  10.000000  14.011834     26.040844
+        
+        ---------------------------------------------------------------------------------------------
+        example,
+        from rundict import route
+        a = route.read(file_name= "file.kml")
+        DataFrame = route.to_df(data=a)
+        data_with_dists = route.add_distance(data=DataFrame, radius=6371 )
+        data_with_ascent = route.add_Asc(data=DataFrame, AscUpLim= 2 , AscLowLim= -2 )
+        
+
+        returns,
+
+                Lat 	Long 	    Alt 	        Dist 	    Cdist 	    Asc 	   AscFiltered 	Ascent 	    Descent
+        0 	35.097066 	37.858644 	1623.000610 	0.000000 	0.000000 	0.000000 	0.000000 	0.000000 	0.000000
+        1 	35.097043 	37.858640 	1624.600586 	2.583244 	2.583244 	1.599976 	1.599976 	1.599976 	0.000000
+        2 	35.097021 	37.858636 	1626.200562 	2.473208 	5.056452 	1.599976 	1.599976 	1.599976 	0.000000
+        
+        """
+
+        Asc = []
+        for i in range(len(data)):
+            if i == 0:
+                Asc.append(0)
+            else:
+                Ascent = data.Alt[i] - data.Alt[i-1]
+                Asc.append(Ascent)
+        Asc = pd.DataFrame(Asc)
+        data["Asc"] = Asc
+        Asc1 = pd.DataFrame(data["Asc"])
+        Asc1.loc[Asc1.Asc >  AscUpLim , :] = np.nan
+        Asc1.loc[Asc1.Asc < AscLowLim , :] = np.nan
+        data["AscFiltered"] = Asc1
+        data.AscFiltered = data.AscFiltered.interpolate(method='linear', limit_direction='forward',limit=500)
+        Asc2=[]
+        for i in data.AscFiltered:
+            if i<0:
+                Asc2.append(0)
+            else:
+                Asc2.append(i)         
+        Asc3=[]
+        for i in data.AscFiltered:
+            if i>0:
+                Asc3.append(0)
+            else:
+                Asc3.append(i)       
+        data["Ascent"] = pd.DataFrame(Asc2)
+        data["Descent"] = pd.DataFrame(Asc3)
+        return data 
+    
     def to_graph(data):      
         plt.xlabel('Distance meters')
         plt.ylabel('Altitue meters')
