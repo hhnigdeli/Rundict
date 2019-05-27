@@ -164,6 +164,37 @@ class route(object):
         data["Descent"] = pd.DataFrame(Asc3)
         return data 
     
+    def  add_Slp(data,UpLim,LowLim,Srange):
+        Slp = []
+        for i in range(len(data)):
+                if data.Dist[i] == 0:
+                    Slp.append(0)
+                else:
+
+                    Slp.append((100*data.AscFiltered[i])/data.Dist[i])
+        c= 0
+        SlpFiltered_ = []
+        for i in Slp:
+            if c < Srange:
+                SlpFiltered_.append(np.nan)
+            elif c == Srange:
+                SlpFiltered_.append(i)
+
+            elif c > Srange:
+                SlpFiltered_.append(np.nan)
+                c = 0
+            c = c +1 
+        SlpFiltered_[0] =  Slp[0]    
+        SlpFiltered_[len(SlpFiltered_)-1] =  Slp[len(Slp)-1]   
+        SlpFiltered = pd.DataFrame(SlpFiltered_)
+        SlpFiltered.columns=["Slp"]
+        SlpFiltered.loc[SlpFiltered.Slp >  UpLim , :] = np.nan
+        SlpFiltered.loc[SlpFiltered.Slp < LowLim , :] = np.nan    
+        data["Slp"] = pd.DataFrame(Slp)  
+        data["SlpFiltered"] = pd.DataFrame(SlpFiltered    
+        data.SlpFiltered = data.SlpFiltered.interpolate(method='polynomial', order=2, limit_direction='forward',limit=1500)               
+        return data
+    
     def to_graph(data):      
         plt.xlabel('Distance meters')
         plt.ylabel('Altitue meters')
