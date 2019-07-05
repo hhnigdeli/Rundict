@@ -5,41 +5,29 @@ from bs4 import BeautifulSoup
 from math import sin, cos, sqrt, atan2, radians
 
 class route(object):
-
-    def read(file_name,tag="LineString"):
+    def kml_to_df( file_name,tag="LineString",seperator=","):
         """
-        to read .kml file
-        read_kml(file_name="file.kml",tag="coordinates")
-        ----------------------------------------------------------------------------------------------
-        file_name = .xml or .kml file in the directory
-        tag = The tag name that includes Lat, Long and Altitute data most probably it is "coordinates"
+        to  convert .kml file  to Pandas DataFrame        
+        ---------------------------------------------------------------------------------------------
+        example,   
+        DataFrame = route.kml_to_df(file_name= "file.kml",tag="LineString",seperator=",")
         """
-        coor=[]
+        data=[]
         infile = open(str(file_name),"r")
         contents = infile.read()
         soup = BeautifulSoup(contents,'xml')
         titles = soup.find_all(str(tag))
         for title in titles:
-            coor.append(title.get_text()) 
-        return coor
-    
-    def to_df( data, seperator=","):
-        """
-        to  convert file that has been read before to Pandas DataFareme
-        to_df(data) 
-        ---------------------------------------------------------------------------------------------
-        example,
-        from rundict import gpsdata
-        a = gpsdata.read(file_name= "file.kml")
-        DataFrame = gpsdata.to_df(data=a)
-        """
+            data.append(title.get_text())
+
+
         #to split merged text values by " "
         liste_0 =[]
         for i in range(len(data)):
             a = shlex.split(data[i], posix=False)
             liste_0.append(a) 
         df_0 = pd.DataFrame(liste_0).transpose()
-        #to merge different columns that represent continious gpsdata to one column
+            #to merge different columns that represent continious gpsdata to one column
         liste_1 = []
         for i in range(len(df_0.columns)):
             liste_1.append(df_0[i])
@@ -52,26 +40,59 @@ class route(object):
         counter = 0
         if df_2.Alt.sum() < 15:
             df_3 = df_2.dropna()
-            df_4 = df_3.reset_index(drop=True)
+            c = df_3.reset_index(drop=True)
         else:
             df_3 = df_2.dropna()    
             df_4 = df_3[~(df_2 == 0).any(axis=1)]
-            df_4 = df_4.reset_index(drop=True)
-        return df_4
+            c = df_4.reset_index(drop=True)
+        return c
 
+    def gpx_to_df( file_name):
+        """
+        to  convert .gpx file  to Pandas DataFrame        
+        ---------------------------------------------------------------------------------------------
+        example,      
+        DataFrame = route.gpx_to_df(file_name= "file.gpx")
+        """
+        
+        tags = ["ele"]
+        ele=[]
+        datalists = [ele]
+        df = [ele]
+        infile = open(str(file_name),"r")
+        contents = infile.read()
+        soup = BeautifulSoup(contents,'xml')
+
+        for i in range(len(tags)): 
+                        
+                    a = soup.find_all(str(tags[i]))
+                    
+                    for b in a:
+                            
+                        df[i].append(b.get_text())
+        with open(str(file_name),"r") as raw_resuls:
+            results = BeautifulSoup(raw_resuls, 'lxml')
+        lat=[]
+        lon =[]
+        for element in results.find_all("trkseg"):
+            for trkpt in element.find_all("trkpt"):
+                lat.append(trkpt['lat'])
+                lon.append(trkpt['lon'])
+
+        mastardata = {"Lat":lat,"Long":lon,"Alt":ele }
+        mastardf = pd.DataFrame(mastardata)
+        b = mastardf.astype({"Lat":"float","Long":"float","Alt":"float"})
+
+        return  b
+    
     def add_distance(data,radius=6371):
         """
         to add distances between two points induvisually and acumulated
-        add_distance(world_radius=6371, data)
+        route.add_distance(world_radius=6371, data)
         ---------------------------------------------------------------------------------------------
         radius = default 6371 kms
         data = Pandas DataFrame includes Lat & Long olumns
         ---------------------------------------------------------------------------------------------
-        example,
-        from rundict import gpsdata
-        a = gpsdata.read(file_name= "file.kml")
-        DataFrame = gpsdata.to_df(data=a)
-        data_with_dists = gpsdata.add_distance(data=DataFrame, radius=6371 )
 
         returns,
                 Lat       Long        Alt       Dist         Cdist
@@ -79,7 +100,7 @@ class route(object):
         1      32.003716  36.538640  10.000000  12.029010     12.029010
         2      32.003591  36.538621  10.000000  14.011834     26.040844
         """      
-        #to colculate distances between to gps points and aculated distances 
+        #to calculate distances between to gps points and aculated distances 
         distances = []
         for i in range(len(data)):
             if i == 0:
@@ -117,11 +138,7 @@ class route(object):
         2      32.003591  36.538621  10.000000  14.011834     26.040844
         
         ---------------------------------------------------------------------------------------------
-        example,
-        from rundict import route
-        a = route.read(file_name= "file.kml")
-        DataFrame = route.to_df(data=a)
-        data_with_dists = route.add_distance(data=DataFrame, radius=6371 )
+
         data_with_ascent = route.add_Asc(data=DataFrame, AscUpLim= 2 , AscLowLim= -2 )
         
 
@@ -213,11 +230,7 @@ class splinter(object):
             x_axis = x axis of line plot or index 
             y_axis = data points of y axis 
             ---------------------------------------------------------------------------------------------
-            example,
-            from rundict import gpsdata,splinter
-            a = gpsdata.read(file_name= "file.kml")
-            DataFrame = gpsdata.to_df(data=a)
-            data = gpsdata.add_distance(data=DataFrame, radius=6371 )
+
             splinter.find_peaks(data, data.Cdist , data.Alt , 1500, 7,5)
             
             returns splited line plot on graph and list of edges' index
