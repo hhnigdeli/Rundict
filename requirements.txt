@@ -1,0 +1,6 @@
+pandas
+numpy
+matplotlib
+shlex
+bs4
+math
