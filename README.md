@@ -1,6 +1,6 @@
 <h1>Rundict</h1>
 
-For reading .xml and .kml GPS running route data files and create topo and split the topo by peak points.
+For reading .gpx, .xml and .kml GPS running route data files and create topo and split the topo by peak points.
 
 
 
@@ -8,41 +8,14 @@ first,
 
 from rundict import route,splinter
 
-<h2>Function1, route.read()</h2>
+<h2>Function1, route.kml_to_df or route.gpx_to_df()</h2>
 
-read(file_name,tag="LineString"):
-
----------------------------------------------------------------------------------------------
-
-to read .kml file
-
-example,
-
-        """
-        file_name: .xml or .kml file in the directory
-        tag: The tag name that includes Lat, Long and Altitute data most probably it is "coordinates
-        """
-        
-
-<h2>Function2, route.to_df()</h2>
-
-to_df( data, seperator=","):
+kml_to_df(file_name,tag="LineString",seperator=","):
+gpx_to_df(file_name):
 
 ---------------------------------------------------------------------------------------------
 
-        
-to  convert file that has been read before to Pandas DataFareme
-        
 
-example,
-
-
-        """
-        from rundict import route
-        a = route.read(file_name= "file.kml")
-        DataFrame = gpsdata.to_df(data=a)
-        """
-        
               
 <h2>Function3, route.add_distance()</h2>
 
