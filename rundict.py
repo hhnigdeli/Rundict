@@ -208,7 +208,7 @@ class route(object):
         SlpFiltered.loc[SlpFiltered.Slp >  UpLim , :] = np.nan
         SlpFiltered.loc[SlpFiltered.Slp < LowLim , :] = np.nan    
         data["Slp"] = pd.DataFrame(Slp)  
-        data["SlpFiltered"] = pd.DataFrame(SlpFiltered    
+        data["SlpFiltered"] = pd.DataFrame(SlpFiltered)   
         data.SlpFiltered = data.SlpFiltered.interpolate(method='polynomial', order=2, limit_direction='forward',limit=1500)               
         return data
     
