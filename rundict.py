@@ -132,19 +132,15 @@ class route(object):
         AscUpLim = Clear outliars up limit and replace lineer data to it
         AscLowLim = Clear outliars low  limit and replace lineer data to it
         data = pandas Dataframe must include columns,
-
                  Lat       Long        Alt       Dist         Cdist
         0      32.003820  36.538675  -7.100000   0.000000      0.000000
         1      32.003716  36.538640  10.000000  12.029010     12.029010
         2      32.003591  36.538621  10.000000  14.011834     26.040844
         
         ---------------------------------------------------------------------------------------------
-
         data_with_ascent = route.add_Asc(data=DataFrame, AscUpLim= 2 , AscLowLim= -2 )
         
-
         returns,
-
                 Lat 	Long 	    Alt 	        Dist 	    Cdist 	    Asc 	   AscFiltered 	Ascent 	    Descent
         0 	35.097066 	37.858644 	1623.000610 	0.000000 	0.000000 	0.000000 	0.000000 	0.000000 	0.000000
         1 	35.097043 	37.858640 	1624.600586 	2.583244 	2.583244 	1.599976 	1.599976 	1.599976 	0.000000
@@ -180,37 +176,81 @@ class route(object):
                 Asc3.append(i)       
         data["Ascent"] = pd.DataFrame(Asc2)
         data["Descent"] = pd.DataFrame(Asc3)
+        del data['AscFiltered']
+        del data['Asc']
         return data 
     
-    def  add_Slp(data,UpLim,LowLim,Srange):
-        Slp = []
+    def  add_Slp(data,UpLim=-45,LowLim=45,Srange=10):
+        Cdist = []
+        Alt = []
+        c=0
         for i in range(len(data)):
-                if data.Dist[i] == 0:
-                    Slp.append(0)
-                else:
-
-                    Slp.append((100*data.AscFiltered[i])/data.Dist[i])
-        c= 0
-        SlpFiltered_ = []
-        for i in Slp:
-            if c < Srange:
-                SlpFiltered_.append(np.nan)
-            elif c == Srange:
-                SlpFiltered_.append(i)
-
-            elif c > Srange:
-                SlpFiltered_.append(np.nan)
-                c = 0
-            c = c +1 
-        SlpFiltered_[0] =  Slp[0]    
-        SlpFiltered_[len(SlpFiltered_)-1] =  Slp[len(Slp)-1]   
-        SlpFiltered = pd.DataFrame(SlpFiltered_)
-        SlpFiltered.columns=["Slp"]
-        SlpFiltered.loc[SlpFiltered.Slp >  UpLim , :] = np.nan
-        SlpFiltered.loc[SlpFiltered.Slp < LowLim , :] = np.nan    
-        data["Slp"] = pd.DataFrame(Slp)  
-        data["SlpFiltered"] = pd.DataFrame(SlpFiltered)   
-        data.SlpFiltered = data.SlpFiltered.interpolate(method='polynomial', order=2, limit_direction='forward',limit=1500)               
+            if c == 0:
+                a = data.Cdist[i]
+                b = data.Alt[i]
+                Cdist.append(a)
+                Alt.append(b)
+                c +=1
+            elif c < Srange-1:
+                Cdist.append("a")
+                Alt.append("b")
+                c+=1
+            elif c == Srange-1:
+                Cdist.append("a")
+                Alt.append("b")
+                c =0 
+        if (len(Cdist)-1)%Srange == 0:
+            pass
+        else:
+            while (len(Cdist)-1)%Srange == 8:
+                Cdist.append("a")
+                Alt.append("b") 
+            Cdist.append(list(data.Cdist)[-1])
+            Alt.append(list(data.Alt)[-1])
+        extDf = pd.DataFrame({"Cdist":Cdist , "Alt":Alt})
+        Cdist_ = []
+        Alt_ = []
+        for i in range(len(extDf)) :
+            if type(extDf.Cdist[i])!= str:
+                x = extDf.Cdist[i]
+                Cdist_.append(x)
+        for i in range(len(extDf)) :
+            if type(extDf.Alt[i])!= str:
+                x = extDf.Alt[i]
+                Alt_.append(x)
+        extDf_ = pd.DataFrame({"Cdist_":Cdist_ , "Alt_":Alt_})
+        extDf_
+        _Cdist_ = []
+        _Alt_ =[]
+        _Slp_ = []
+        for i in range(len(extDf_)):
+            if i == 0:
+                _Cdist_.append(0)
+                _Alt_.append(0)
+                _Slp_.append(0)
+            else:
+                cd = extDf_.Cdist_[i] -  extDf_.Cdist_[i-1]
+                al = extDf_.Alt_[i] -  extDf_.Alt_[i-1]
+                _Cdist_.append(cd)
+                _Alt_.append(al)
+                _Slp_.append(100*(al/cd))
+        _extDf_ = pd.DataFrame({"_Cdist_":_Cdist_ , "_Alt_":_Alt_ , "_Slp_":_Slp_})
+        __Slp__ = []
+        for i in _extDf_._Slp_ :
+            if LowLim < i < UpLim:
+                __Slp__.append(i)
+                for j in range(Srange-1):
+                    __Slp__.append(i)
+            elif i <= LowLim :
+                __Slp__.append(LowLim)
+                for j in range(Srange-1):
+                    __Slp__.append(LowLim)
+            elif i >= UpLim :
+                __Slp__.append(UpLim)
+                for j in range(Srange-1):
+                    __Slp__.append(UpLim)
+        del __Slp__[:Srange]  
+        data["Slp"] = pd.DataFrame(__Slp__)     
         return data
     
     def to_graph(data):      
