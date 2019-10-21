@@ -73,7 +73,7 @@ class route(object):
                 lon.append(trkpt['lon'])
                 att.append(re.findall("<ele>(.*?)</ele>", str(trkpt)))
                 
-        print("Points have read. Alt:{}, Lat:{}, Long:{}".format(len(att),len(lat),len(lon)))
+        print("Points have been read. Alt:{}, Lat:{}, Long:{}".format(len(att),len(lat),len(lon)))
         mastardata = {"Lat":lat,"Long":lon,"Alt":att }
         mastardf = pd.DataFrame(mastardata)
         b = mastardf.astype({"Lat":"float","Long":"float","Alt":"str"})        
