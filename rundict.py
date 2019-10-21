@@ -55,34 +55,37 @@ class route(object):
         example,      
         DataFrame = route.gpx_to_df(file_name= "file.gpx")
         """
-        
-        tags = ["ele"]
-        ele=[]
-        datalists = [ele]
-        df = [ele]
+        lat=[]
+        lon =[]
+        att =[]
+        elev=[]
+                
         infile = open(str(file_name),"r")
         contents = infile.read()
         soup = BeautifulSoup(contents,'xml')
-
-        for i in range(len(tags)): 
                         
-                    a = soup.find_all(str(tags[i]))
-                    
-                    for b in a:
-                            
-                        df[i].append(b.get_text())
         with open(str(file_name),"r") as raw_resuls:
             results = BeautifulSoup(raw_resuls, 'lxml')
-        lat=[]
-        lon =[]
+       
         for element in results.find_all("trkseg"):
             for trkpt in element.find_all("trkpt"):
                 lat.append(trkpt['lat'])
                 lon.append(trkpt['lon'])
-
-        mastardata = {"Lat":lat,"Long":lon,"Alt":ele }
+                att.append(re.findall("<ele>(.*?)</ele>", str(trkpt)))
+                
+        print("Points have read. Alt:{}, Lat:{}, Long:{}".format(len(att),len(lat),len(lon)))
+        mastardata = {"Lat":lat,"Long":lon,"Alt":att }
         mastardf = pd.DataFrame(mastardata)
-        b = mastardf.astype({"Lat":"float","Long":"float","Alt":"float"})
+        b = mastardf.astype({"Lat":"float","Long":"float","Alt":"str"})        
+        c = [i[2:][:-2] for i in b.Alt]
+        for i in c:
+            if i == '':
+                elev.append(np.nan)                
+            else:
+                elev.append(float(i))
+        b = b[["Lat","Long"]]
+        b["Alt"] = pd.DataFrame(elev)
+        b["Alt"] = b["Alt"].interpolate(method='linear', limit_direction='forward',limit=50)
 
         return  b
     
