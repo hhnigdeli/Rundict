@@ -13,40 +13,28 @@ class route(object):
         example,   
         DataFrame = route.kml_to_df(file_name= "file.kml",tag="LineString",seperator=",")
         """
-        data=[]
         infile = open(str(file_name),"r")
         contents = infile.read()
         soup = BeautifulSoup(contents,'xml')
         titles = soup.find_all(str(tag))
-        for title in titles:
-            data.append(title.get_text())
-
-
+        data=[title.get_text() for title in titles]
         #to split merged text values by " "
-        liste_0 =[]
-        for i in range(len(data)):
-            a = shlex.split(data[i], posix=False)
-            liste_0.append(a) 
-        df_0 = pd.DataFrame(liste_0).transpose()
-            #to merge different columns that represent continious gpsdata to one column
-        liste_1 = []
-        for i in range(len(df_0.columns)):
-            liste_1.append(df_0[i])
-        d = pd.concat(liste_1, ignore_index=True)
-        df_1=pd.DataFrame(d)
+        liste_0 =[shlex.split(data[i], posix=False) for i in range(len(data))]
+        liste_0[0].pop(0)
         #to split one column values three columns represent Lat Long and Alt 
-        df_1.columns = ["column"]
-        df_1[['Lat', 'Long', 'Alt']] = df_1.column.str.split(seperator,expand=True)
-        df_2 = df_1[['Lat', 'Long', 'Alt']].astype({"Lat": float , "Long": float,"Alt":float})
-        counter = 0
-        if df_2.Alt.sum() < 15:
-            df_3 = df_2.dropna()
-            c = df_3.reset_index(drop=True)
-        else:
-            df_3 = df_2.dropna()    
-            df_4 = df_3[~(df_2 == 0).any(axis=1)]
-            c = df_4.reset_index(drop=True)
-        return c
+        liste_1=[i.split(seperator) for i in liste_0[0]]
+        #to pop if any data missing 
+        popindex = []
+        for i in range(len(liste_1)):
+            if len(liste_1[i]) != 3:
+                popindex.append(i)        
+        for i in popindex:
+            liste_1.pop(i)        
+        lat  =  [i[0] for i in liste_1 ]
+        long =  [i[1] for i in liste_1 ]
+        alt  =  [i[2] for i in liste_1 ]
+        dataJSON = { "lat":lat , "long":long , "alt":alt}
+        return pd.DataFrame(dataJSON)
 
     def gpx_to_df( file_name):
         """
