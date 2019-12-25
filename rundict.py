@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 from math import sin, cos, sqrt, atan2, radians
 
 class route(object):
-    def kml_to_df( file_name,tag="LineString",seperator=","):
+        def kml_to_df( file_name,tag="LineString",seperator=","):
         """
         to  convert .kml file  to Pandas DataFrame        
         ---------------------------------------------------------------------------------------------
@@ -33,8 +33,9 @@ class route(object):
         lat  =  [i[0] for i in liste_1 ]
         long =  [i[1] for i in liste_1 ]
         alt  =  [i[2] for i in liste_1 ]
-        dataJSON = { "lat":lat , "long":long , "alt":alt}
-        return pd.DataFrame(dataJSON)
+        dataJSON = { "Lat":lat , "Long":long , "Alt":alt}
+        df = pd.DataFrame(dataJSON).astype({"Lat": float , "Long": float,"Alt":float})
+        return df
 
     def gpx_to_df( file_name):
         """
